@@ -1,0 +1,159 @@
+.root {
+    -app-bg: #fafafa; -app-panel: #ececec; -app-border: #dedede;
+    -app-fg: #212121; -app-muted: #757575; -app-accent: #3264eb; -app-selection: #d0d0d0;
+    -note-color: -app-accent; -task-color: -app-fg;
+    -fx-font-family: "JetBrainsMono Nerd Font"; -fx-font-size: 12px;
+    -fx-base: -app-panel; -fx-background: -app-bg; -fx-control-inner-background: -app-bg;
+    -fx-text-background-color: -app-fg; -fx-text-base-color: -app-fg; -fx-accent: -app-accent;
+    -fx-focus-color: -app-accent; -fx-faint-focus-color: transparent;
+    -fx-selection-bar: -app-selection; -fx-selection-bar-text: -app-fg;
+}
+.app, .note-editor, .dialog-pane { -fx-background-color: -app-bg; }
+.label { -fx-text-fill: -app-fg; }
+.muted, .note-excerpt, .empty-hint { -fx-text-fill: -app-muted; }
+.button, .toggle-button, .combo-box-base {
+    -fx-background-color: transparent; -fx-background-radius: 3; -fx-border-radius: 3;
+    -fx-padding: 7 11; -fx-cursor: hand; -fx-text-fill: -app-fg;
+}
+.button:hover, .toggle-button:hover, .combo-box-base:hover { -fx-background-color: -app-panel; }
+.button:focused, .toggle-button:focused, .combo-box-base:focused { -fx-border-color: -app-accent; }
+.button.primary { -fx-background-color: -app-accent; -fx-text-fill: white; -fx-padding: 10 16; }
+.button.primary:hover { -fx-opacity: .88; }
+.menu-bar { -fx-background-color: -app-panel; -fx-padding: 2 12; -fx-border-width: 0 0 1 0; -fx-border-color: -app-border; }
+.menu-bar .menu-button { -fx-padding: 4 12; }
+.menu:hover, .menu:showing, .menu-item:focused { -fx-background-color: -app-selection; }
+.menu-item:focused .label, .menu:showing .label { -fx-text-fill: -app-fg; }
+.context-menu { -fx-background-color: -app-bg; -fx-border-color: -app-border; -fx-padding: 6; }
+.app-header { -fx-padding: 3.5 8; -fx-border-width: 0 0 1 0; -fx-border-color: -app-border; }
+.app-header .text-field { -fx-padding: 1.5 4.5; }
+.app-header .button { -fx-padding: 1.5 4; }
+.app-header .button.primary { -fx-padding: 2 6; }
+.app-header .combo-box-base { -fx-padding: 1.5 4; }
+.app-header .combo-box .list-cell { -fx-padding: 1.5 4; }
+.app-header .combo-box .arrow-button { -fx-padding: 0 4; }
+#note-collection {
+    -fx-background-color: -app-accent; -fx-background-insets: 0;
+    -fx-border-color: transparent; -fx-border-width: 1;
+    -collection-foreground: ladder(-app-accent, white 49%, black 50%);
+}
+#note-collection:hover, #note-collection:showing { -fx-border-color: -collection-foreground; }
+#note-collection:focused { -fx-border-color: -app-fg; }
+/* Style only the closed selection cell; popup choices keep the theme's normal text colors. */
+#note-collection > .list-cell {
+    -fx-background-color: transparent; -fx-border-width: 0;
+    -fx-text-fill: -collection-foreground;
+}
+#note-collection > .arrow-button { -fx-background-color: transparent; }
+#note-collection > .arrow-button > .arrow { -fx-background-color: -collection-foreground; }
+#note-collection .combo-box-popup .list-view {
+    -fx-background-color: -app-bg; -fx-border-color: -app-border; -fx-border-width: 1;
+}
+#note-collection .combo-box-popup .list-cell { -fx-text-fill: -app-fg; }
+#note-collection .combo-box-popup .list-cell:filled:hover,
+#note-collection .combo-box-popup .list-cell:filled:selected { -fx-background-color: -app-selection; }
+.brand { -fx-font-size: 1em; -fx-font-weight: bold; }
+.entity-icon { -fx-fill: transparent; -fx-stroke-width: 1.4; -fx-stroke-line-cap: round; -fx-stroke-line-join: round; }
+.note-icon { -fx-stroke: -note-color; }
+.task-icon { -fx-stroke: -task-color; }
+.text-field { -fx-background-color: -app-bg; -fx-text-fill: -app-fg; -fx-prompt-text-fill: -app-muted; -fx-border-color: -app-border; -fx-border-radius: 3; -fx-background-radius: 3; -fx-padding: 9 11; }
+.text-field:focused { -fx-border-color: -app-accent; }
+.split-pane { -fx-background-color: -app-bg; -fx-padding: 0; }
+.split-pane-divider { -fx-background-color: -app-border; -fx-padding: 0 1 0 0; }
+.sidebar { -fx-background-color: -app-panel; -fx-font-size: .5em; -fx-padding: 8.5 7 5; }
+.sidebar .split-pane { -fx-background-color: -app-panel; }
+.sidebar .sidebar-sections > .split-pane-divider {
+    /* SplitPane uses preferred width as the divider thickness in either orientation. */
+    -fx-padding: 4; -fx-background-color: -app-border; -fx-background-insets: 3 0;
+    -fx-cursor: v-resize;
+}
+.sidebar .sidebar-sections > .split-pane-divider > .vertical-grabber {
+    -fx-padding: 1 12; -fx-background-color: -app-muted; -fx-background-radius: 1;
+}
+.sidebar .sidebar-sections > .split-pane-divider:hover > .vertical-grabber { -fx-background-color: -app-accent; }
+.section-title, .pane-heading { -fx-font-size: .833333em; -fx-font-weight: bold; -fx-text-fill: -app-muted; }
+.note-label { -fx-text-fill: -note-color; }
+.task-label { -fx-text-fill: -task-color; }
+.list-view { -fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0; }
+.list-cell { -fx-background-color: transparent; -fx-padding: 12 10; -fx-border-color: transparent; -fx-border-width: 0 0 0 2; }
+.list-cell:filled:hover { -fx-background-color: -app-bg; }
+.list-cell:filled:selected { -fx-background-color: -app-bg; -fx-border-color: -app-accent; }
+.note-name { -fx-font-size: 1em; -fx-font-weight: bold; -fx-text-fill: -note-color; }
+.note-excerpt { -fx-font-size: .833333em; }
+#notes-list .list-cell:filled:selected { -fx-border-color: -note-color; }
+#tasks-list .list-cell:filled:selected { -fx-border-color: -task-color; }
+.scroll-pane, .scroll-pane > .viewport { -fx-background-color: transparent; -fx-padding: 0; }
+.task-cell { -fx-padding: 8 10; }
+.task-row { -fx-padding: 2 0; }
+.task-text { -fx-font-size: .916667em; -fx-padding: 1 0 0; -fx-text-fill: -task-color; -fx-cursor: hand; }
+.task-text:done { -fx-opacity: .72; }
+.task-text:done .text { -fx-strikethrough: true; }
+.task-remove { -fx-padding: 0 4; -fx-text-fill: -app-muted; }
+.check-box .box { -fx-background-color: -app-bg; -fx-border-color: -app-border; -fx-border-radius: 2; -fx-background-radius: 2; -fx-padding: 3; }
+.check-box:selected .mark { -fx-background-color: -app-accent; }
+.task-cell .check-box .box { -fx-border-color: -task-color; }
+.task-cell .check-box:selected .mark { -fx-background-color: -task-color; }
+.quiet-button { -fx-text-fill: -app-muted; -fx-font-size: .833333em; -fx-padding: 7 0; }
+.empty-hint { -fx-font-size: .916667em; -fx-padding: 10 4; -fx-line-spacing: 5; }
+.empty-title { -fx-font-size: 1.833333em; -fx-font-weight: bold; }
+.tab-pane { -fx-tab-min-height: 2em; -fx-tab-max-height: 2em; -fx-tab-max-width: 240; }
+.tab-pane .tab-header-area { -fx-padding: 0; }
+.tab-pane .tab-header-background { -fx-background-color: -app-panel; }
+.tab { -fx-background-color: -app-panel; -fx-background-radius: 0; -fx-padding: 0 4; -fx-border-width: 0 0 2 0; -fx-border-color: transparent; }
+.tab:selected { -fx-background-color: -app-bg; -fx-border-color: -app-accent; }
+.tab .tab-label { -fx-text-fill: -app-muted; -fx-font-size: .916667em; }
+.note-tab .tab-label, .note-tab:selected .tab-label { -fx-text-fill: -note-color; }
+.note-tab:selected { -fx-border-color: -note-color; }
+.task-tab .tab-label, .task-tab:selected .tab-label { -fx-text-fill: -task-color; }
+.task-tab:selected { -fx-border-color: -task-color; }
+.tab .tab-close-button { -fx-background-color: -app-muted; }
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator { -fx-border-color: transparent; }
+.task-editor .check-box { -fx-text-fill: -task-color; }
+.task-editor .check-box .box { -fx-border-color: -task-color; }
+.task-editor .check-box:selected .mark { -fx-background-color: -task-color; }
+.format-toolbar { -fx-alignment: center-left; -fx-padding: 2 4 3; -fx-border-width: 0 0 1 0; -fx-border-color: -app-border; }
+.format-button { -fx-min-width: 32; -fx-font-size: 1.083333em; -fx-padding: 2.5 4; }
+/* Use an outline glyph when the platform's color emoji fallback renders blank. */
+.bullet-list-button { -fx-font-family: "Noto Sans Symbols 2"; }
+.mode-button { -fx-font-size: .833333em; -fx-padding: 3 5; }
+.mode-button:selected { -fx-background-color: -app-panel; -fx-text-fill: -app-accent; }
+.editor-font-control { -fx-alignment: center-left; -fx-padding: 0 4; }
+.editor-font-control > .label { -fx-font-size: .833333em; }
+.editor-font-size { -fx-background-color: -app-bg; -fx-border-color: -app-border; -fx-border-radius: 3; -fx-padding: 0; }
+.editor-font-size .text-field { -fx-padding: 1.5 4; -fx-border-width: 0; }
+.editor-font-size .increment-arrow-button, .editor-font-size .decrement-arrow-button { -fx-padding: 2 4; -fx-background-color: -app-panel; }
+.editor-font-size .increment-arrow, .editor-font-size .decrement-arrow { -fx-background-color: -app-fg; }
+.pane-heading { -fx-padding: 6 8; }
+.text-area.markdown-source { -fx-font-size: 1.083333em; -fx-text-fill: -app-fg; -fx-background-insets: 0; -fx-background-color: -app-bg; -fx-padding: 0; }
+.markdown-source .content { -fx-background-color: -app-bg; -fx-padding: 6 8 8; }
+.markdown-source:focused { -fx-background-color: -app-bg; }
+.markdown-source .scroll-pane { -fx-padding: 0; }
+.editor-footer { -fx-padding: 6 8; -fx-font-size: .833333em; -fx-border-width: 1 0 0 0; -fx-border-color: -app-border; }
+.editor-footer .label { -fx-text-fill: -app-muted; }
+.app-status { -fx-alignment: center-left; -fx-padding: 8 22; -fx-font-size: .833333em; -fx-background-color: -app-panel; -fx-border-width: 1 0 0 0; -fx-border-color: -app-border; }
+.app-status .label { -fx-text-fill: -app-muted; }
+.scroll-bar { -fx-background-color: transparent; -fx-pref-width: 9; -fx-pref-height: 9; }
+.scroll-bar .thumb { -fx-background-color: -app-border; -fx-background-radius: 3; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-padding: 0; -fx-shape: ""; }
+/* Sidebar text inherits half the app font; halve fixed control dimensions to match. */
+.sidebar .button { -fx-padding: 3.5 5.5; -fx-background-radius: 1.5; -fx-border-radius: 1.5; -fx-border-width: .5; }
+.sidebar .text-field { -fx-padding: 4.5 5.5; -fx-background-radius: 1.5; -fx-border-radius: 1.5; -fx-border-width: .5; }
+.sidebar .list-cell { -fx-padding: 6 5; -fx-border-width: 0 0 0 1; }
+.sidebar .task-cell { -fx-padding: 4 5; }
+.sidebar .task-row { -fx-padding: 1 0; }
+.sidebar .task-text { -fx-padding: .5 0 0; }
+.sidebar .task-remove { -fx-padding: 0 2; }
+.sidebar .check-box .box { -fx-padding: 1.5; -fx-background-radius: 1; -fx-border-radius: 1; -fx-border-width: .5; }
+.sidebar .quiet-button { -fx-padding: 3.5 0; }
+.sidebar .empty-hint { -fx-padding: 5 2; -fx-line-spacing: 2.5; }
+.sidebar .scroll-bar { -fx-pref-width: 4.5; -fx-pref-height: 4.5; }
+.sidebar .scroll-bar .thumb { -fx-background-insets: 1; -fx-background-radius: 1.5; }
+.tooltip { -fx-background-color: -app-fg; -fx-text-fill: -app-bg; }
+.dialog-pane .header-panel { -fx-background-color: -app-panel; }
+.app:compact .app-header, .app:short .app-header { -fx-padding: 1.5 6; }
+.app:compact .format-button { -fx-min-width: 26; -fx-padding: 2.5 2.5; }
+.app:compact .mode-button { -fx-padding: 3 3.5; }
+.app:compact .markdown-source .content { -fx-padding: 6 8; }
+.app:compact .app-status { -fx-padding: 7 12; }
+.app:short .sidebar { -fx-padding: 4 5 3; }
+.app:short .sidebar-section { -fx-spacing: 3; }
