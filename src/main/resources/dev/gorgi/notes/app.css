@@ -110,12 +110,23 @@
 .task-editor .check-box { -fx-text-fill: -task-color; }
 .task-editor .check-box .box { -fx-border-color: -task-color; }
 .task-editor .check-box:selected .mark { -fx-background-color: -task-color; }
-.format-toolbar { -fx-alignment: center-left; -fx-padding: 2 4 3; -fx-border-width: 0 0 1 0; -fx-border-color: -app-border; }
-.format-button { -fx-min-width: 32; -fx-font-size: 1.083333em; -fx-padding: 2.5 4; }
-/* Use an outline glyph when the platform's color emoji fallback renders blank. */
-.bullet-list-button { -fx-font-family: "Noto Sans Symbols 2"; }
-.mode-button { -fx-font-size: .833333em; -fx-padding: 3 5; }
-.mode-button:selected { -fx-background-color: -app-panel; -fx-text-fill: -app-accent; }
+.format-toolbar { -fx-alignment: top-left; -fx-spacing: 6; -fx-padding: 4 8; -fx-border-width: 0 0 1 0; -fx-border-color: -app-border; }
+.format-tools { -fx-alignment: center-left; -fx-row-valignment: center; }
+.format-button, .editor-more {
+    -fx-background-color: transparent; -fx-background-radius: 16;
+    -fx-border-radius: 16; -fx-padding: 7;
+    -fx-min-width: 30; -fx-pref-width: 30; -fx-max-width: 30;
+    -fx-min-height: 30; -fx-pref-height: 30; -fx-max-height: 30;
+}
+.format-button:hover, .editor-more:hover, .editor-more:showing { -fx-background-color: -app-selection; }
+.editor-tool-icon { -fx-fill: transparent; -fx-stroke: -app-muted; -fx-stroke-width: 1.5; -fx-stroke-line-cap: round; -fx-stroke-line-join: round; }
+.format-button:hover .editor-tool-icon, .editor-more:hover .editor-tool-icon, .editor-more:showing .editor-tool-icon { -fx-stroke: -app-fg; }
+.editor-more .editor-tool-icon { -fx-stroke-width: 2.5; }
+.editor-more > .arrow-button { -fx-padding: 0; }
+.editor-more > .arrow-button > .arrow { -fx-padding: 0; -fx-shape: ""; }
+.editor-more > .label { -fx-padding: 0; }
+.format-divider { -fx-pref-height: 16; -fx-max-height: 16; -fx-padding: 0 4; }
+.format-divider .line { -fx-border-color: transparent -app-border transparent transparent; -fx-border-width: 0 1 0 0; }
 .editor-font-control { -fx-alignment: center-left; -fx-padding: 0 4; }
 .editor-font-control > .label { -fx-font-size: .833333em; }
 .editor-font-size { -fx-background-color: -app-bg; -fx-border-color: -app-border; -fx-border-radius: 3; -fx-padding: 0; }
@@ -151,8 +162,7 @@
 .tooltip { -fx-background-color: -app-fg; -fx-text-fill: -app-bg; }
 .dialog-pane .header-panel { -fx-background-color: -app-panel; }
 .app:compact .app-header, .app:short .app-header { -fx-padding: 1.5 6; }
-.app:compact .format-button { -fx-min-width: 26; -fx-padding: 2.5 2.5; }
-.app:compact .mode-button { -fx-padding: 3 3.5; }
+.app:compact .format-toolbar { -fx-padding: 3 5; -fx-spacing: 3; }
 .app:compact .markdown-source .content { -fx-padding: 6 8; }
 .app:compact .app-status { -fx-padding: 7 12; }
 .app:short .sidebar { -fx-padding: 4 5 3; }

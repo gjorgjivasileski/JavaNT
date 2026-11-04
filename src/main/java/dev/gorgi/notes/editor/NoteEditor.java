@@ -16,15 +16,12 @@ import java.util.function.Predicate;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -32,7 +29,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -60,7 +56,7 @@ public final class NoteEditor extends VBox {
   private final VBox sourcePane;
   private final VBox previewPane;
   private final Label count = new Label();
-  private final ToggleGroup modes = new ToggleGroup();
+  private final EditorToolbar toolbar;
   private final PauseTransition previewDelay = new PauseTransition(Duration.millis(220));
   private final PauseTransition commitDelay = new PauseTransition(Duration.millis(180));
   private final Executor executor;
@@ -70,7 +66,8 @@ public final class NoteEditor extends VBox {
   private double textScale = 1;
   private boolean updatingFontSize;
   private DoubleConsumer onEditorFontSizeChanged = size -> {};
-  private String mode = "Split";
+  private String mode = "Read";
+  private boolean editingPreview = true;
   private boolean previewDirty;
   private boolean updatingFromPreview;
   private boolean updatingTask;
@@ -245,66 +242,24 @@ public final class NoteEditor extends VBox {
               }
             });
     sourcePane = pane("MARKDOWN", source);
-    previewPane = pane("LIVE PREVIEW", preview);
-    split.getItems().addAll(sourcePane, previewPane);
+    previewPane = pane("TEXT", preview);
+    split.getItems().add(previewPane);
     split.setDividerPositions(.5);
     split.getStyleClass().add("editor-split");
     VBox.setVgrow(split, Priority.ALWAYS);
-    var bulletList =
-        tool(
-            "\uD83D\uDCCB",
-            "Bullet list",
-            () -> format("insertUnorderedList", null, () -> prefix("- ")));
-    bulletList.getStyleClass().add("bullet-list-button");
-    var toolbar =
-        new FlowPane(
-            3,
-            4,
-            tool(
-                "B",
-                "Bold · Ctrl+B",
-                () -> format("bold", null, () -> wrap("**", "**", "bold text"))),
-            tool(
-                "I",
-                "Italic · Ctrl+I",
-                () -> format("italic", null, () -> wrap("*", "*", "italic text"))),
-            tool("H", "Heading", () -> format("formatBlock", "h2", () -> prefix("## "))),
-            bulletList,
-            tool("☐", "Add or remove task from this row", this::toggleCheckbox),
-            tool("❯", "Quote", () -> format("formatBlock", "blockquote", () -> prefix("> "))),
-            tool("</>", "Code", () -> format("formatBlock", "pre", () -> wrap("`", "`", "code"))),
-            tool(
-                "↗",
-                "Link",
-                () ->
-                    format("createLink", "https://", () -> wrap("[", "](https://)", "link text"))));
-    for (var mode : List.of("Write", "Split", "Read")) {
-      var button = new ToggleButton(mode);
-      button.setToggleGroup(modes);
-      button.getStyleClass().add("mode-button");
-      button.setOnAction(
-          e -> {
-            button.setSelected(true);
-            setMode(mode);
-          });
-      if (mode.equals("Split")) {
-        button.setSelected(true);
-      }
-      toolbar.getChildren().add(button);
-    }
     configureFontSize();
-    var fontLabel = new Label("Text size");
-    fontLabel.setLabelFor(fontSize);
-    var fontControl = new HBox(4, fontLabel, fontSize);
-    fontControl.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-    fontControl.getStyleClass().add("editor-font-control");
-    toolbar.getChildren().add(fontControl);
-    if (task != null) {
-      toolbar.getChildren().add(taskDone);
-    }
-    toolbar.getStyleClass().add("format-toolbar");
+    toolbar =
+        new EditorToolbar(
+            this::formatAction,
+            this::toggleCheckbox,
+            selected -> {
+              setMode(selected);
+              focusEditor();
+            },
+            fontSize,
+            task == null ? null : taskDone);
     widthProperty().addListener((obs, old, width) -> updateSplitOrientation());
-    var hint = new Label("Click preview to edit · Ctrl+click links");
+    var hint = new Label("Edit text directly · Ctrl+click links");
     hint.getStyleClass().add("muted");
     hint.visibleProperty().bind(widthProperty().greaterThan(600));
     hint.managedProperty().bind(hint.visibleProperty());
@@ -330,7 +285,16 @@ public final class NoteEditor extends VBox {
         .addListener(
             (obs, old, focused) -> {
               if (focused) {
+                editingPreview = false;
                 flushPendingEdits();
+              }
+            });
+    preview
+        .focusedProperty()
+        .addListener(
+            (obs, old, focused) -> {
+              if (focused) {
+                editingPreview = true;
               }
             });
     previewDelay.setOnFinished(e -> render());
@@ -355,20 +319,32 @@ public final class NoteEditor extends VBox {
   private static VBox pane(String heading, javafx.scene.Node content) {
     var label = new Label(heading);
     label.getStyleClass().add("pane-heading");
+    label.setVisible(false);
+    label.setManaged(false);
     var pane = new VBox(label, content);
     pane.setMinWidth(0);
     VBox.setVgrow(content, Priority.ALWAYS);
     return pane;
   }
 
-  private Button tool(String text, String hint, Runnable action) {
-    var button = new Button(text);
-    button.setTooltip(new Tooltip(hint));
-    button.setAccessibleText(hint);
-    button.setFocusTraversable(false);
-    button.setOnAction(e -> action.run());
-    button.getStyleClass().add("format-button");
-    return button;
+  private void formatAction(String action) {
+    switch (action) {
+      case "bold" -> format("bold", null, () -> wrap("**", "**", "bold text"));
+      case "italic" -> format("italic", null, () -> wrap("*", "*", "italic text"));
+      case "strikeThrough" -> format("strikeThrough", null, () -> wrap("~~", "~~", "text"));
+      case "heading" -> format("formatBlock", "h2", () -> prefix("## "));
+      case "link" -> format("createLink", "https://", () -> wrap("[", "](https://)", "link text"));
+      case "insertUnorderedList" -> format(action, null, () -> prefix("- "));
+      case "insertOrderedList" -> format(action, null, () -> prefix("1. "));
+      case "quote" -> format("formatBlock", "blockquote", () -> prefix("> "));
+      case "code" -> format("formatBlock", "pre", () -> wrap("```\n", "\n```", "code"));
+      default -> throw new IllegalArgumentException("Unknown formatting action: " + action);
+    }
+  }
+
+  /** Connects the toolbar image button to the application's image picker. */
+  public void setOnInsertImage(Runnable action) {
+    toolbar.setOnInsertImage(action);
   }
 
   private void changed() {
@@ -533,15 +509,22 @@ public final class NoteEditor extends VBox {
   }
 
   public void setMode(String mode) {
+    if (!List.of("Write", "Read", "Split").contains(mode)) {
+      throw new IllegalArgumentException("Unknown editor mode: " + mode);
+    }
     flushPendingEdits();
+    toolbar.selectMode(mode);
     if (this.mode.equals(mode)) {
       return;
     }
     this.mode = mode;
-    modes.getToggles().stream()
-        .filter(toggle -> ((ToggleButton) toggle).getText().equals(mode))
-        .findFirst()
-        .ifPresent(modes::selectToggle);
+    if (!mode.equals("Split")) {
+      editingPreview = mode.equals("Read");
+    }
+    for (var pane : List.of(sourcePane, previewPane)) {
+      pane.getChildren().getFirst().setVisible(mode.equals("Split"));
+      pane.getChildren().getFirst().setManaged(mode.equals("Split"));
+    }
     switch (mode) {
       case "Write" -> split.getItems().setAll(sourcePane);
       case "Read" -> split.getItems().setAll(previewPane);
@@ -550,6 +533,10 @@ public final class NoteEditor extends VBox {
         split.getItems().setAll(sourcePane, previewPane);
         split.setDividerPositions(.5);
       }
+    }
+    if (!mode.equals("Write") && !renderedSource.equals(source.getText())) {
+      previewDelay.stop();
+      render();
     }
   }
 
@@ -818,7 +805,7 @@ public final class NoteEditor extends VBox {
   }
 
   private void toggleCheckbox() {
-    if (mode.equals("Read") || preview.isFocused()) {
+    if (editsRenderedText()) {
       toggleRenderedCheckbox();
       return;
     }
@@ -939,7 +926,7 @@ public final class NoteEditor extends VBox {
   }
 
   private void format(String command, String value, Runnable sourceAction) {
-    if (mode.equals("Read") || preview.isFocused()) {
+    if (editsRenderedText()) {
       executeReadCommand(command, value);
     } else {
       flushPendingEdits();
@@ -948,7 +935,7 @@ public final class NoteEditor extends VBox {
   }
 
   public boolean editRendered(String action) {
-    if (!mode.equals("Read") && !preview.isFocused()) {
+    if (!editsRenderedText()) {
       return false;
     }
     var command =
@@ -1034,11 +1021,15 @@ public final class NoteEditor extends VBox {
   }
 
   public void focusEditor() {
-    if (mode.equals("Read")) {
+    if (editsRenderedText()) {
       preview.requestFocus();
     } else {
       source.requestFocus();
     }
+  }
+
+  private boolean editsRenderedText() {
+    return mode.equals("Read") || (mode.equals("Split") && editingPreview);
   }
 
   public void dispose() {

@@ -452,8 +452,7 @@ class UiSmokeTest {
                 var editor = activeEditor();
                 for (var button : editor.lookupAll(".format-button"))
                     assertWithinWidth(button, editor, "Formatting button");
-                for (var button : editor.lookupAll(".mode-button"))
-                    assertWithinWidth(button, editor, "Editor mode button");
+                assertWithinWidth(editor.lookup("#editor-more"), editor, "Editor view menu");
                 assertWithinWidth(root.lookup("#search-notes"), root, "Search field");
                 assertWithinWidth(headerCollection(), root, "Collection dropdown");
                 assertWithinWidth(root.lookup("#new-note"), root, "New note button");
@@ -578,9 +577,10 @@ class UiSmokeTest {
     private void verifyRename(String name) throws Exception {
         var target = fx(() -> tabs().getSelectionModel().getSelectedItem());
         var original = fx(target::getText);
-        var mode = fx(() -> activeEditor().lookupAll(".mode-button").stream()
-                .map(ToggleButton.class::cast).filter(ToggleButton::isSelected)
-                .map(ToggleButton::getText).findFirst().orElseThrow());
+        var mode = fx(() -> ((MenuButton) activeEditor().lookup("#editor-more")).getItems().stream()
+                .filter(RadioMenuItem.class::isInstance).map(RadioMenuItem.class::cast)
+                .filter(RadioMenuItem::isSelected).map(item -> (String) item.getUserData())
+                .findFirst().orElseThrow());
         var other = fx(() -> tabs().getTabs().stream().filter(tab -> tab != target).findFirst().orElseThrow());
         var otherTitle = fx(other::getText);
         fx(() -> { tabs().getSelectionModel().select(other); return null; });

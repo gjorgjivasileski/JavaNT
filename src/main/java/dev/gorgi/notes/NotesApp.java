@@ -1563,6 +1563,7 @@ public final class NotesApp extends Application {
     editor.setEditorFontSize(editorFontSize);
     editor.setTextScale(textScale);
     editor.setOnEditorFontSizeChanged(this::setEditorFontSize);
+    editor.setOnInsertImage(this::insertImage);
     editors.put(id, editor);
     documentTabs.put(id, tab);
     tab.setContent(editor);
