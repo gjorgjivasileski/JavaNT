@@ -388,7 +388,7 @@ class ToolbarUiTest {
     return future.get(15, TimeUnit.SECONDS);
   }
 
-  private static void saveScreenshot(Image image, Path path) throws IOException {
+  static void saveScreenshot(Image image, Path path) throws IOException {
     int width = (int) image.getWidth();
     int height = (int) image.getHeight();
     var data = new ByteArrayOutputStream();

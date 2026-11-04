@@ -119,6 +119,7 @@ final class EditorToolbar extends HBox {
         .addAll(
             item("Quote block", "quote", () -> format.accept("quote")),
             item("Code block", "code-block", () -> format.accept("code")),
+            item("Flowchart", "flowchart", () -> format.accept("flowchart")),
             new SeparatorMenuItem(),
             view("Text", "Read", changeMode),
             view("Markdown", "Write", changeMode),

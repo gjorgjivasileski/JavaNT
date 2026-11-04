@@ -43,6 +43,6 @@ The shaded JAR can print JavaFX's unsupported-configuration warning because it l
 
 ## 5. Features
 
-Organize Markdown notes into collections and search their contents. Notes and tasks open in an editable Text view with a compact formatting toolbar; use the three-dot menu to switch to Markdown or Split view and to insert quotes or code blocks. Rename and drag tabs to reorder them. Add images, resize or reposition them, change their layering, and import or export Markdown files.
+Organize Markdown notes into collections and search their contents. Notes and tasks open in an editable Text view with a compact formatting toolbar; use the three-dot menu to switch to Markdown or Split view and to insert quotes, code blocks, or [Mermaid flowcharts](docs/flowcharts.md). Flowcharts render offline and have editable source. Rename and drag tabs to reorder them. Add images, resize or reposition them, change their layering, and import or export Markdown files.
 
 Create linked tasks from note checkboxes, keep their names and completion states synchronized, and add Markdown details in each task's own editor. Linked tasks appear in the sidebar when their source tab is selected. Changes autosave locally with a previous-save backup. Adjust the sidebar and text sizes, and use the active Omarchy theme when available or the default appearance on other desktops.
