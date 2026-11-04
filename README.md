@@ -27,14 +27,14 @@ mvn javafx:run
 mvn -P fat-jar clean package
 ```
 
-The output is `target/javafx-notes-1.0.0-all.jar`, including JavaFX and the application's other dependencies. Build separately for each target OS and processor architecture because JavaFX includes native libraries.
+The output is `target/javafx-notes-1.0.1-all.jar`, including JavaFX and the application's other dependencies. Build separately for each target OS and processor architecture because JavaFX includes native libraries.
 
 ## 4. Start the JAR
 
 From the project folder:
 
 ```sh
-java -jar target/javafx-notes-1.0.0-all.jar
+java -jar target/javafx-notes-1.0.1-all.jar
 ```
 
 You can copy the JAR anywhere and use its new path in the command. Java 26 must be installed; Maven is unnecessary when running the JAR.
