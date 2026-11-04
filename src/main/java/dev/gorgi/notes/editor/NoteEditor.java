@@ -51,6 +51,7 @@ public final class NoteEditor extends VBox {
   private final Spinner<Integer> fontSize = new Spinner<>();
   private final WebView preview = new WebView();
   private final PreviewImages images = new PreviewImages(preview, this::markPreviewDirty);
+  private final PreviewDiagrams diagrams = new PreviewDiagrams(preview, this::markPreviewDirty);
   private String pendingImageSelection;
   private final SplitPane split = new SplitPane();
   private final VBox sourcePane;
@@ -182,6 +183,7 @@ public final class NoteEditor extends VBox {
                   && preview.getEngine().getDocument() != null) {
                 var document = preview.getEngine().getDocument();
                 images.attach(document);
+                diagrams.attach(document, this.theme);
                 if (pendingImageSelection != null) {
                   images.select(pendingImageSelection);
                   pendingImageSelection = null;
@@ -338,6 +340,7 @@ public final class NoteEditor extends VBox {
       case "insertOrderedList" -> format(action, null, () -> prefix("1. "));
       case "quote" -> format("formatBlock", "blockquote", () -> prefix("> "));
       case "code" -> format("formatBlock", "pre", () -> wrap("```\n", "\n```", "code"));
+      case "flowchart" -> insertFlowchart();
       default -> throw new IllegalArgumentException("Unknown formatting action: " + action);
     }
   }
@@ -345,6 +348,25 @@ public final class NoteEditor extends VBox {
   /** Connects the toolbar image button to the application's image picker. */
   public void setOnInsertImage(Runnable action) {
     toolbar.setOnInsertImage(action);
+  }
+
+  private void insertFlowchart() {
+    flushPendingEdits();
+    if (editsRenderedText()
+        && renderedSource.equals(source.getText())
+        && diagrams.insert(PreviewDiagrams.STARTER)) {
+      flushPendingEdits();
+      return;
+    }
+    int start = source.getSelection().getStart();
+    String opening = "\n\n```mermaid\n";
+    source.replaceSelection(opening + PreviewDiagrams.STARTER + "```\n\n");
+    source.selectRange(
+        start + opening.length(), start + opening.length() + PreviewDiagrams.STARTER.length());
+    if (mode.equals("Read")) {
+      setMode("Split");
+    }
+    source.requestFocus();
   }
 
   private void changed() {
@@ -563,6 +585,7 @@ public final class NoteEditor extends VBox {
                       if (!disposed && revision == renderVersion) {
                         if (error == null) {
                           renderedSource = text;
+                          diagrams.clear();
                           preview.getEngine().loadContent(html);
                         } else {
                           count.setText("Preview unavailable; your source is intact");
@@ -574,6 +597,7 @@ public final class NoteEditor extends VBox {
   private void invalidatePreview() {
     renderVersion++;
     images.clear();
+    diagrams.clear();
     var document = preview.getEngine().getDocument();
     if (document != null && document.getElementsByTagName("body").getLength() > 0) {
       ((Element) document.getElementsByTagName("body").item(0))
@@ -1039,6 +1063,7 @@ public final class NoteEditor extends VBox {
     previewDelay.stop();
     commitDelay.stop();
     images.dispose();
+    diagrams.clear();
     preview.getEngine().load(null);
   }
 }

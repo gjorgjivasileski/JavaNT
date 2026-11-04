@@ -13,6 +13,7 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.ext.task.list.items.TaskListItemMarker;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.FencedCodeBlock;
 import org.commonmark.node.HtmlInline;
 import org.commonmark.node.Image;
 import org.commonmark.node.ListItem;
@@ -101,6 +102,18 @@ public final class Markdown {
             .attributeProviderFactory(
                 context ->
                     (node, tag, attributes) -> {
+                      if (tag.equals("pre")
+                          && node instanceof FencedCodeBlock code
+                          && code.getInfo() != null
+                          && code.getInfo()
+                              .strip()
+                              .split("\\s+", 2)[0]
+                              .equalsIgnoreCase("mermaid")) {
+                        attributes.put("class", "mermaid-block");
+                        attributes.put("contenteditable", "false");
+                        attributes.put("role", "figure");
+                        attributes.put("aria-label", "Mermaid diagram");
+                      }
                       if ((tag.equals("ul") || tag.equals("ol")) && node.getFirstChild() != null) {
                         boolean tasksOnly = true;
                         for (Node item = node.getFirstChild();
