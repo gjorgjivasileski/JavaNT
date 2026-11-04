@@ -24,7 +24,7 @@ mvn javafx:run
 ## 3. Build a runnable JAR
 
 ```sh
-mvn -P fat-jar clean package
+mvn -Pfat-jar clean package
 ```
 
 The output is `target/javafx-notes-1.0.1-all.jar`, including JavaFX and the application's other dependencies. Build separately for each target OS and processor architecture because JavaFX includes native libraries.
